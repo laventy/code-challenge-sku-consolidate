@@ -2,21 +2,26 @@ const Catelogs = require("./models/catelogs");
 const Barcodes = require("./models/barcodes");
 const writeJsonToCsvFile = require("./utils/json2csv");
 
-const CATELOG_A_PATH = "sample/input/catalogA.csv";
-const CATELOG_B_PATH = "sample/input/catalogB.csv";
-
-const BARCODES_A_PATH = "sample/input/barcodesA.csv";
-const BARCODES_B_PATH = "sample/input/barcodesB.csv";
+const INPUT_PATHS = {
+  catelogAPath: "sample/input/catalogA.csv",
+  catelogBPath: "sample/input/catalogB.csv",
+  barcodeAPath: "sample/input/barcodesA.csv",
+  barcodeBPath: "sample/input/barcodesB.csv",
+};
 
 const OUTPUT_PATH = "output/output.csv";
 
-const run = async () => {
+const run = async (
+  { catelogAPath, catelogBPath, barcodeAPath, barcodeBPath },
+  outputPath,
+  isWriteFile = true
+) => {
   const result = [];
 
-  const catelogs = new Catelogs(CATELOG_A_PATH, CATELOG_B_PATH);
+  const catelogs = new Catelogs(catelogAPath, catelogBPath);
   await catelogs.init();
 
-  const barcodes = new Barcodes(BARCODES_A_PATH, BARCODES_B_PATH);
+  const barcodes = new Barcodes(barcodeAPath, barcodeBPath);
   await barcodes.init();
 
   // Put all catelog items within A into result as the base
@@ -24,7 +29,9 @@ const run = async () => {
 
   result.push(...findExclusiveItemsFromB(catelogs, barcodes));
 
-  writeJsonToCsvFile(result, OUTPUT_PATH);
+  console.log(result);
+  if (isWriteFile) return writeJsonToCsvFile(result, outputPath);
+  return result;
 };
 
 // Go through all catelog items one by one within B to compare with each item of A
@@ -38,4 +45,4 @@ const findExclusiveItemsFromB = (catelogs, barcodes) => {
 const isDuplicateWithinA = (catelogItemB, catelogA, barcodes) =>
   catelogA.some((itemA) => barcodes.isDuplicate(itemA.SKU, catelogItemB.SKU));
 
-run();
+run(INPUT_PATHS, OUTPUT_PATH);
