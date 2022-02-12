@@ -28,4 +28,4 @@ const expectedResult = [
   },
 ];
 
-export default expectedResult;
+module.exports = expectedResult;

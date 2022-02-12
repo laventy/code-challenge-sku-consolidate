@@ -1,21 +1,23 @@
 const Catelogs = require("./models/catelogs");
 const Barcodes = require("./models/barcodes");
+const Controller = require("./models/controller");
+
 const writeJsonToCsvFile = require("./utils/json2csv");
 
 const INPUT_PATHS = {
-  catelogAPath: "sample/input/catalogA.csv",
-  catelogBPath: "sample/input/catalogB.csv",
-  barcodeAPath: "sample/input/barcodesA.csv",
-  barcodeBPath: "sample/input/barcodesB.csv",
+  catelogAPath: "input/catalogA.csv",
+  catelogBPath: "input/catalogB.csv",
+  barcodeAPath: "input/barcodesA.csv",
+  barcodeBPath: "input/barcodesB.csv",
 };
 
 const OUTPUT_PATH = "output/output.csv";
 
 const run = async (
   { catelogAPath, catelogBPath, barcodeAPath, barcodeBPath },
-  outputPath,
-  isWriteFile = true
+  outputPath = undefined
 ) => {
+  console.log({ catelogAPath, catelogBPath, barcodeAPath, barcodeBPath });
   const result = [];
 
   const catelogs = new Catelogs(catelogAPath, catelogBPath);
@@ -24,25 +26,18 @@ const run = async (
   const barcodes = new Barcodes(barcodeAPath, barcodeBPath);
   await barcodes.init();
 
+  const controller = new Controller(catelogs, barcodes);
+
   // Put all catelog items within A into result as the base
   result.push(...catelogs.addSourceMultiple(catelogs.catelogA, "A"));
 
-  result.push(...findExclusiveItemsFromB(catelogs, barcodes));
+  result.push(...controller.findExclusiveItemsFromB());
 
-  console.log(result);
-  if (isWriteFile) return writeJsonToCsvFile(result, outputPath);
+  if (outputPath) return writeJsonToCsvFile(result, outputPath);
   return result;
 };
 
-// Go through all catelog items one by one within B to compare with each item of A
-// Ignore it if a duplicate. otherwise, consider it.
-const findExclusiveItemsFromB = (catelogs, barcodes) => {
-  return catelogs.catelogB
-    .filter((itemB) => !isDuplicateWithinA(itemB, catelogs.catelogA, barcodes))
-    .map((itemB) => catelogs.addSourceSingle(itemB, "B"));
-};
+// only run if this file is the running file
+if (!module.parent) run(INPUT_PATHS, OUTPUT_PATH);
 
-const isDuplicateWithinA = (catelogItemB, catelogA, barcodes) =>
-  catelogA.some((itemA) => barcodes.isDuplicate(itemA.SKU, catelogItemB.SKU));
-
-run(INPUT_PATHS, OUTPUT_PATH);
+module.exports = run;

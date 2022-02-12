@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "npm install && node index",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "author": "xiaolei.liu",
   "license": "ISC",
