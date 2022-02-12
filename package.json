@@ -4,11 +4,13 @@
   "description": "consolidate SKUs from different two sources",
   "main": "index.js",
   "scripts": {
+    "start": "npm install && node index",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "xiaolei.liu",
   "license": "ISC",
   "dependencies": {
-    "csvtojson": "^2.0.10"
+    "csvtojson": "^2.0.10",
+    "json2csv": "^5.0.6"
   }
 }
