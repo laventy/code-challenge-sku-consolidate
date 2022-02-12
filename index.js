@@ -17,7 +17,6 @@ const run = async (
   { catelogAPath, catelogBPath, barcodeAPath, barcodeBPath },
   outputPath = undefined
 ) => {
-  console.log({ catelogAPath, catelogBPath, barcodeAPath, barcodeBPath });
   const result = [];
 
   const catelogs = new Catelogs(catelogAPath, catelogBPath);
