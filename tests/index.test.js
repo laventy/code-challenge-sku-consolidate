@@ -1,5 +1,4 @@
 const run = require("../index");
-const csv = require("csvtojson");
 
 const expectedScenario1 = require("./fixtures/scenario1/output/expected");
 const expectedScenario2 = require("./fixtures/scenario2/output/expected");
