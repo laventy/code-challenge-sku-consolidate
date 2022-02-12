@@ -1,1 +1,1 @@
-## Output folder that will contain the output csv
+## Output folder that will contain the output csv after app starts
